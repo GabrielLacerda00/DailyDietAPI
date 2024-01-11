@@ -5,12 +5,13 @@ import crypto from 'crypto'
 const app = fastify()
 
 app.get('/test', async () => {
-  const test = await knex('users')
+  const test = await knex('meals')
     .insert({
       id: crypto.randomUUID(),
-      session_id: '12345678910',
-      name: 'User Test',
-      email: 'gabtes@gmail.com',
+      userId: crypto.randomUUID(),
+      name: 'Meal Test',
+      description: 'arroz com carne',
+      is_on_diet: true,
       date: new Date(),
     })
     .returning('*')

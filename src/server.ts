@@ -1,22 +1,15 @@
 import fastify from 'fastify'
-import { knex } from './database'
-import crypto from 'crypto'
+import { usersRoutes } from './routes/usersRoutes'
+import cookie from '@fastify/cookie'
 
 const app = fastify()
+// Registro os cookies
+app.register(cookie)
 
-app.get('/test', async () => {
-  const test = await knex('meals')
-    .insert({
-      id: crypto.randomUUID(),
-      userId: crypto.randomUUID(),
-      name: 'Meal Test',
-      description: 'arroz com carne',
-      is_on_diet: true,
-      date: new Date(),
-    })
-    .returning('*')
-
-  return test
+// Utilizo o register para salvar o plugin
+// Que contém minhas rotas dos usuários
+app.register(usersRoutes, {
+  prefix: 'users',
 })
 
 app

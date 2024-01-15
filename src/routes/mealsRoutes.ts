@@ -41,6 +41,7 @@ export async function mealsRoutes(app: FastifyInstance) {
   )
 
   app.get(
+    // Pega todas as refeições de um user
     '/:userId',
     { preHandler: [checkSessionIdExists] },
     async (request, reply) => {
@@ -53,6 +54,29 @@ export async function mealsRoutes(app: FastifyInstance) {
       const meals = await knex('meals').where({ userId }).select()
 
       return reply.send(meals)
+    },
+  )
+
+  app.get(
+    // Pega uma refeição de um user
+    '/:userId/:mealId',
+    { preHandler: [checkSessionIdExists] },
+    async (request, reply) => {
+      // defini o schema do meu params
+      const paramsSchema = z.object({
+        userId: z.string(),
+        mealId: z.string(),
+      })
+      // verifico o userId e o mealId
+      const { userId, mealId } = paramsSchema.parse(request.params)
+      const meal = await knex('meals')
+        .where({
+          id: mealId,
+          userId,
+        })
+        .select()
+
+      return reply.send(meal)
     },
   )
 }

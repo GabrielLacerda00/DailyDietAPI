@@ -1,4 +1,5 @@
 // Aqui sobreescrevoa tipagem da minha bliblioteca KNEX
+import { UUID } from 'crypto'
 import { Knex } from 'knex'
 
 declare module 'knex/types/tables' {

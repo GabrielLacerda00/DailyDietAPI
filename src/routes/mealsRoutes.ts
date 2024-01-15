@@ -79,4 +79,60 @@ export async function mealsRoutes(app: FastifyInstance) {
       return reply.send(meal)
     },
   )
+
+  app.put(
+    // Pega uma refeição de um user
+    '/:userId/:mealId',
+    { preHandler: [checkSessionIdExists] },
+    async (request, reply) => {
+      // defini o schema do meu params
+      const paramsSchema = z.object({
+        mealId: z.string(),
+        userId: z.string(),
+      })
+      // verifico o userId e o mealId
+      const { userId, mealId } = paramsSchema.parse(request.params)
+
+      // defino o schema do meu update
+      const updateBodySchema = z.object({
+        name: z.string(),
+        description: z.string(),
+        is_on_diet: z.boolean(),
+      })
+
+      // verifico o body do meu update
+      // eslint-disable-next-line camelcase
+      const { name, description, is_on_diet } = updateBodySchema.parse(
+        request.body,
+      )
+
+      // Pego a meal
+      const meal = await knex('meals')
+        .where({
+          id: mealId,
+          userId,
+        })
+        .select()
+        .first()
+
+      // Verifico se a meal existe
+      if (!meal) {
+        return reply.status(404).send({ error: 'Meal not found' })
+      }
+
+      await knex('meals')
+        .where({
+          id: mealId,
+          userId,
+        })
+        .update({
+          name,
+          description,
+          // eslint-disable-next-line camelcase
+          is_on_diet,
+        })
+
+      return reply.status(204).send()
+    },
+  )
 }

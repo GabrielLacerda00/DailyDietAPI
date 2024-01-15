@@ -87,7 +87,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       // defini o schema do meu params
       const paramsSchema = z.object({
-        mealId: z.string(),
+        mealId: z.string().uuid(),
         userId: z.string(),
       })
       // verifico o userId e o mealId
@@ -132,6 +132,39 @@ export async function mealsRoutes(app: FastifyInstance) {
           is_on_diet,
         })
 
+      return reply.status(204).send()
+    },
+  )
+
+  app.delete(
+    '/:userId/:mealId',
+    { preHandler: [checkSessionIdExists] },
+    async (request, reply) => {
+      // defini o schema do meu params
+      const paramsSchema = z.object({
+        userId: z.string(),
+        mealId: z.string().uuid(),
+      })
+      // verifico o userId e o mealId
+      const { userId, mealId } = paramsSchema.parse(request.params)
+      const meal = await knex('meals')
+        .where({
+          id: mealId,
+          userId,
+        })
+        .select()
+        .first()
+
+      if (!meal) {
+        return reply.status(404).send({ error: 'Meal not found' })
+      }
+
+      await knex('meals')
+        .where({
+          id: mealId,
+          userId,
+        })
+        .delete()
       return reply.status(204).send()
     },
   )

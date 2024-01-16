@@ -10,7 +10,7 @@
     "dev": "tsx watch src/server.ts",
     "lint": "eslint src --ext .ts --fix",
     "knex": "node --no-warnings --import tsx ./node_modules/.bin/knex",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx vitest"
   },
   "keywords": [],
   "author": "",
@@ -18,10 +18,13 @@
   "devDependencies": {
     "@rocketseat/eslint-config": "^2.1.0",
     "@types/node": "^20.11.0",
+    "@types/supertest": "^6.0.2",
     "eslint": "^8.56.0",
+    "supertest": "^6.3.4",
     "tsup": "^8.0.1",
     "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
   },
   "dependencies": {
     "@fastify/cookie": "^9.2.0",

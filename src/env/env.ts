@@ -1,5 +1,14 @@
 import 'dotenv/config' // Ler automaticamente meu arquivo env e joga em process.env
 import { z } from 'zod'
+import { config } from 'dotenv'
+
+// Verifico se minha variavel de ambiente
+// esta setada para  test
+if (process.env.NODE_ENV === 'test') {
+  config({ path: '.env.test', override: true })
+} else {
+  config()
+}
 
 // Schema de todas as variáveis ambientes
 const envSchema = z.object({

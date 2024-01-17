@@ -153,7 +153,6 @@ describe('meals routes', () => {
       .set('Cookie', userResponse.get('Set-Cookie'))
       .expect(200)
 
-    console.log()
     expect(mealResponse.body[0]).toEqual(
       expect.objectContaining({
         id,
@@ -222,5 +221,66 @@ describe('meals routes', () => {
       .expect(204)
   })
 
-  // it('should be able to get metrics of a user', () => {})
+  it('should be able to get metrics of a user', async () => {
+    // Crio o user
+    const userResponse = await request(app.server)
+      .post('/users')
+      .send({ name: 'John Doe', email: 'john@gmail.com' })
+      .expect(201)
+    // Pego o user
+    const usersResponse = await request(app.server)
+      .get('/users')
+      .set('Cookie', userResponse.get('Set-Cookie'))
+      .expect(200)
+
+    expect(usersResponse.body.transactions).toHaveLength(1)
+    // Pego o id do user
+    const userId = usersResponse.body.transactions[0].id
+
+    await request(app.server)
+      .post('/meals')
+      .set('Cookie', userResponse.get('Set-Cookie'))
+      .send({
+        userId,
+        name: 'Arroz com brocolis',
+        description: 'arroz com brocolis',
+        is_on_diet: true,
+      })
+      .expect(201)
+
+    await request(app.server)
+      .post('/meals')
+      .set('Cookie', userResponse.get('Set-Cookie'))
+      .send({
+        userId,
+        name: 'Pizza',
+        description: 'pizza',
+        is_on_diet: false,
+      })
+      .expect(201)
+
+    await request(app.server)
+      .post('/meals')
+      .set('Cookie', userResponse.get('Set-Cookie'))
+      .send({
+        userId,
+        name: 'Frango',
+        description: 'desfiado',
+        is_on_diet: true,
+      })
+      .expect(201)
+
+    const metricsResponse = await request(app.server)
+      .get(`/meals/${userId}/metrics`)
+      .set('Cookie', userResponse.get('Set-Cookie'))
+      .expect(200)
+
+    console.log(metricsResponse.body)
+    expect(metricsResponse.body).toEqual({
+      totalMeals: 3,
+      totalMealsOnDiet: 2,
+      totalMealsOffDiet: 1,
+      bestOnDietSequence: 1,
+    })
+  })
 })
